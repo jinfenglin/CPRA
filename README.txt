@@ -1,0 +1,1 @@
+This is a program design for pattern recoginition.
