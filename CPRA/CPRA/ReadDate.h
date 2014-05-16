@@ -8,13 +8,14 @@
 #include <malloc.h>
 #include "tools.h"
 using namespace std;
-#define MAX_PATTERN_LENGTH 300
-#define MAX_DATE_ITEM 500
+//#define MAX_PATTERN_LENGTH 15000
+#define MAX_DATE_ITEM 1000
 #ifdef _LINUX_
 #deifne \\ /
 #endif
 #define DEFAULT_TRAINDATE_PATH "..\\train_date.txt"
 #define DEFAULT_TESTDATE_PATH "..\\test_date.txt "
+#define DEFAULT_MIXEDDATE_PATH "..\\mixed_date.txt"
 struct Standar_Date_Formate
 {
 	string _name;  //name of the date
@@ -26,14 +27,21 @@ class ReadDate:tools
 {
 public:
 	ReadDate();//Read with default path
+	ReadDate(int n);//N_fold reading from single file
 	ReadDate(string train_path,string test_path);//Read with the path given 
 	void Test_Run();
 	bool Monk_Problem_Read();
+	bool DNA_Read(); //read the DNA file 
+	bool N_Fold_Seperate();//seperate the datas read from a single file into testing and training data sets
 	~ReadDate();
 private:
-	ifstream ifs_train,ifs_test;  
+	ifstream ifs_train,ifs_test,ifs_mix;  
 	Standar_Date_Formate Train_Date_Head[MAX_DATE_ITEM];//beginning of training date set
 	Standar_Date_Formate Test_Date_Head[MAX_DATE_ITEM];//beginning of testing date set
+	Standar_Date_Formate Temp_Date_Head[2*MAX_DATE_ITEM];//begining of the date mixed together
 	int train_num,test_num;//record the number of the date items
+	int total_num;
+	int N_Fold;
+
 };
 #endif
