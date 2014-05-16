@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <malloc.h>
+#include "tools.h"
 using namespace std;
 #define MAX_PATTERN_LENGTH 300
 #define MAX_DATE_ITEM 500
@@ -21,7 +22,7 @@ struct Standar_Date_Formate
 	string _content;
 	//char   _content[MAX_PATTERN_LENGTH]; //content of the pattern
 };
-class ReadDate
+class ReadDate:tools
 {
 public:
 	ReadDate();//Read with default path
