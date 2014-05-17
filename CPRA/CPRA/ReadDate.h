@@ -23,7 +23,7 @@ struct Standar_Date_Formate
 	string _content;
 	//char   _content[MAX_PATTERN_LENGTH]; //content of the pattern
 };
-class ReadDate:tools
+class ReadDate:public tools
 {
 public:
 	ReadDate();//Read with default path
@@ -36,11 +36,12 @@ public:
 	~ReadDate();
 protected:
 	ifstream ifs_train,ifs_test,ifs_mix;  
-	Standar_Date_Formate Train_Date_Head[MAX_DATE_ITEM];//beginning of training date set
-	Standar_Date_Formate Test_Date_Head[MAX_DATE_ITEM];//beginning of testing date set
-	Standar_Date_Formate Temp_Date_Head[2*MAX_DATE_ITEM];//begining of the date mixed together
+	Standar_Date_Formate Train_Data_Head[MAX_DATE_ITEM];//beginning of training date set
+	Standar_Date_Formate Test_Data_Head[MAX_DATE_ITEM];//beginning of testing date set
+	Standar_Date_Formate Temp_Data_Head[2*MAX_DATE_ITEM];//begining of the date mixed together
 	int train_num,test_num;//record the number of the date items
 	int total_num;
+	int max_length;//record the longest pattern if pattern vary in length
 	int N_Fold;
 
 };

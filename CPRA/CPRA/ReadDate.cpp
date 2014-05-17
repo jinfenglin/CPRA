@@ -10,6 +10,8 @@ ReadDate::ReadDate()
 		cout<<"Initializing...."<<endl;
 	train_num=0;
 	test_num=0;
+	total_num=0;
+	max_length=0;
 
 }
 ReadDate::ReadDate(string train_path,string test_path )
@@ -26,6 +28,8 @@ ReadDate::ReadDate(int n)
 	train_num=0;
 	test_num=0;
 	N_Fold=n;
+	total_num=0;
+	max_length=0;
 
 }
 ReadDate::~ReadDate()
@@ -44,9 +48,9 @@ bool ReadDate::Monk_Problem_Read()
 		trim(str,' ');
 		if(str.empty())
 			break;
-		Train_Date_Head[i]._class=str[0];
-		Train_Date_Head[i]._content=str.substr(1,6);
-		Train_Date_Head[i]._name=str.substr(7);	
+		Train_Data_Head[i]._class=str[0];
+		Train_Data_Head[i]._content=str.substr(1,6);
+		Train_Data_Head[i]._name=str.substr(7);	
 		train_num++;
 	}
 	//Test date reading
@@ -57,12 +61,13 @@ bool ReadDate::Monk_Problem_Read()
 		trim(str,' ');
 		if(str.empty())
 			break;
-		Test_Date_Head[i]._class=str[0];
-		Test_Date_Head[i]._content=str.substr(1,6);
-		Test_Date_Head[i]._name=str.substr(7);
+		Test_Data_Head[i]._class=str[0];
+		Test_Data_Head[i]._content=str.substr(1,6);
+		Test_Data_Head[i]._name=str.substr(7);
 		test_num++;
 	}
-	int total_num=test_num+train_num;
+	max_length=Test_Data_Head[0]._content.length();
+	total_num=test_num+train_num;
 	return true;
 }
 bool ReadDate::DNA_Read()
@@ -73,10 +78,12 @@ bool ReadDate::DNA_Read()
 	{
 		//getline(ifs_mix,str);
 		ifs_mix>>str_name>>str_content;
-		Temp_Date_Head[i]._class=str_name;
-		Temp_Date_Head[i]._content=str_content;
-		Temp_Date_Head[i]._name=str_name;
+		Temp_Data_Head[i]._class=str_name;
+		Temp_Data_Head[i]._content=str_content;
+		Temp_Data_Head[i]._name=str_name;
 		i++;
+		if(Temp_Data_Head[i]._content.length()>max_length)
+			max_length=Temp_Data_Head[i]._content.length();
 	}
 	total_num=i;
 	return true;
@@ -96,16 +103,16 @@ bool ReadDate::N_Fold_Seperate()
 
 			if(n==Test_Item)//divide into 2 groups
 			{
-				Test_Date_Head[x]._class=Temp_Date_Head[temp_locate]._class;
-				Test_Date_Head[x]._content=Temp_Date_Head[temp_locate]._content;
-				Test_Date_Head[x]._name=Temp_Date_Head[temp_locate]._name;
+				Test_Data_Head[x]._class=Temp_Data_Head[temp_locate]._class;
+				Test_Data_Head[x]._content=Temp_Data_Head[temp_locate]._content;
+				Test_Data_Head[x]._name=Temp_Data_Head[temp_locate]._name;
 				x++;
 			}
 			else
 			{
-				Train_Date_Head[y]._class=Temp_Date_Head[temp_locate]._class;
-				Train_Date_Head[y]._content=Temp_Date_Head[temp_locate]._content;
-				Train_Date_Head[y]._name=Temp_Date_Head[temp_locate]._name;
+				Train_Data_Head[y]._class=Temp_Data_Head[temp_locate]._class;
+				Train_Data_Head[y]._content=Temp_Data_Head[temp_locate]._content;
+				Train_Data_Head[y]._name=Temp_Data_Head[temp_locate]._name;
 				y++;
 			}
 		}
