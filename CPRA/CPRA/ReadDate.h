@@ -34,7 +34,7 @@ public:
 	bool DNA_Read(); //read the DNA file 
 	bool N_Fold_Seperate();//seperate the datas read from a single file into testing and training data sets
 	~ReadDate();
-private:
+protected:
 	ifstream ifs_train,ifs_test,ifs_mix;  
 	Standar_Date_Formate Train_Date_Head[MAX_DATE_ITEM];//beginning of training date set
 	Standar_Date_Formate Test_Date_Head[MAX_DATE_ITEM];//beginning of testing date set
