@@ -2,7 +2,7 @@
 #define _CPRA_H
 #include <stdio.h>
 #include <io.h>
-#include "ReadDate.h"
+#include "ReadData.h"
 #include "train.h"
 #include <fstream>
 #include <iostream>

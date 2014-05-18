@@ -1,4 +1,4 @@
-#include "ReadDate.h"
+#include "ReadData.h"
 #include <malloc.h>
 enum BUILDING_METHOD{_entropy,_random,_hybird};
 enum SEGMENT_KIND {_dynamic,_static};
@@ -23,11 +23,12 @@ struct CRISPR_Head
 	CRISPR_Segment *head;//pointer to the content of an individual CRISPR
 	int length;          //the length of the CRISPR
 	int Credit_in_Population;//Describe how reliable this CRISPR is
+	string class_name;
 	SEGMENT_KIND type;       //static CRIPSR have same length ,dynamic one has variable length
 	int segment_length;  //if the type is _static then this item is accord with the value in CRISPR_Segment _Length 
                          //else segment_length==0 _Length record the length of each segment
 };
-class train:public ReadDate
+class train:public ReadData
 {
 public:
 	train(BUILDING_METHOD);
