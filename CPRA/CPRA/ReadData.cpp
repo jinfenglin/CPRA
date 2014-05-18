@@ -1,5 +1,4 @@
 #include "ReadData.h"
-
 ReadData::ReadData()
 {
 	ifs_train.open(DEFAULT_TRAINDATE_PATH);
@@ -139,20 +138,25 @@ void ReadData::Test_Run()
 	N_Fold_Seperate();
 	Count_Class_Num();
 }
-int  ReadData::Count_Class_Num()
+int  ReadData::Count_Class_Num()//by the way calculate the protion of each kind of data
 {
 	int count_number=1;
 	class_index[0]=Train_Data_Head[0]._class;
-	for(int i=0;i<train_num;i++)
+	class_portion_raw[0]=1;
+	for(int i=1;i<train_num;i++)
 	{
 		int j=0;
 		for(;j<count_number;j++)
 		{
 			if(Train_Data_Head[i]._class==class_index[j])
+			{
+				class_portion_raw[j]++;//count the number of this kind of class			
 				break;
+			}
 		}
-		if(j==count_number)
+		if(j==count_number)//regist new class
 		{
+			class_portion_raw[j]=1; 
 			class_index[count_number]=Train_Data_Head[i]._class;
 			count_number++;	
 		}
@@ -171,6 +175,7 @@ int  ReadData::Count_Class_Num()
 			count_number++;	
 		}
 	}
+	
 	class_num=count_number;
 	return count_number;
 

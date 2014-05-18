@@ -16,6 +16,7 @@ void train::Test_Run()
 	Generate_CRISPR_Population();
 	Build_CRISPR_Index();
 	Set_Range_Random();
+	Entropy();
 	cout<<this->test_num<<endl;
 }
 void Define_Segment_Length()
@@ -135,3 +136,16 @@ bool train::Set_Range_Random()
 	}
 	return true;
 }
+float train::Entropy()//entropy is public for a data set
+{
+	float entropy=0;
+	float temp;
+	for(int i=0;i<class_num;i++)
+	{
+		float class_portion=(float)(class_portion_raw[i])/train_num;
+		entropy+=-class_portion*log(class_portion)/log(2.0);
+	}
+	Entropy_S=entropy;
+	return entropy;
+}
+float Information_Gain()//Information gain is private,decide by the CRISPR&attribute

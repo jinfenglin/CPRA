@@ -47,6 +47,8 @@ protected:
 	int N_Fold;
 	int class_num;//record the number of class
 	string class_index[MAX_CLASS_NUM];
+	int class_portion_raw[MAX_CLASS_NUM];
+	
 
 };
 #endif
