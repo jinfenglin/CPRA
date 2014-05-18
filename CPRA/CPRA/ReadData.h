@@ -10,6 +10,7 @@
 using namespace std;
 //#define MAX_PATTERN_LENGTH 15000
 #define MAX_DATE_ITEM 1000
+#define MAX_CLASS_NUM 30
 #ifdef _LINUX_
 #deifne \\ /
 #endif
@@ -45,7 +46,7 @@ protected:
 	int max_length;//record the longest pattern if pattern vary in length
 	int N_Fold;
 	int class_num;//record the number of class
-	string class_index[20];
+	string class_index[MAX_CLASS_NUM];
 
 };
 #endif

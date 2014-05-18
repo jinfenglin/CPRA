@@ -53,6 +53,7 @@ bool ReadData::Monk_Problem_Read()
 		Train_Data_Head[i]._class=str[0];
 		Train_Data_Head[i]._content=str.substr(1,6);
 		Train_Data_Head[i]._name=str.substr(7);	
+		i++;
 		train_num++;
 	}
 	//Test date reading
@@ -66,6 +67,7 @@ bool ReadData::Monk_Problem_Read()
 		Test_Data_Head[i]._class=str[0];
 		Test_Data_Head[i]._content=str.substr(1,6);
 		Test_Data_Head[i]._name=str.substr(7);
+		i++;
 		test_num++;
 	}
 	max_length=Test_Data_Head[0]._content.length();
@@ -160,15 +162,16 @@ int  ReadData::Count_Class_Num()
 				int j=0;
 		for(;j<count_number;j++)
 		{
-			if(Train_Data_Head[i]._class==class_index[j])
+			if(Test_Data_Head[i]._class==class_index[j])
 				break;
 		}
 		if(j==count_number)
 		{
-			class_index[count_number]=Train_Data_Head[i]._class;
+			class_index[count_number]=Test_Data_Head[i]._class;
 			count_number++;	
 		}
 	}
+	class_num=count_number;
 	return count_number;
 
 }
