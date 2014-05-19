@@ -8,21 +8,6 @@ train::train(int n,BUILDING_METHOD bm):ReadData(n)//N_flod version intialization
 {
 	method=bm;
 }
-void train::Test_Run()
-{
-	Monk_Problem_Read();
-	CRISPR_Population_Size=0.05*total_num;
-	this->Count_Class_Num();
-	Generate_CRISPR_Population();
-	Build_CRISPR_Index();
-	Set_Range_Random();
-	Entropy();
-	cout<<this->test_num<<endl;
-}
-void Define_Segment_Length()
-{
-
-}
 bool train::Generate_CRISPR_Population()
 {
 	//seperate class first 
@@ -98,7 +83,7 @@ bool train::Build_CRISPR_Index()
 		{
 			if(CHead[i].class_name==CIndex[j].class_name)
 			{
-				Add_To_Index(i,j);
+				Add_To_Index(i,j);//Add the node i in CHead into the index j
 			}
 		}
 	return true;
@@ -135,11 +120,10 @@ bool train::Set_Range_Random()
 		CHead[i].segment_length=RandomInt(max_length/3*2)+1;
 	}
 	return true;
-}
+} //set the segment_length
 float train::Entropy()//entropy is public for a data set
 {
 	float entropy=0;
-	float temp;
 	for(int i=0;i<class_num;i++)
 	{
 		float class_portion=(float)(class_portion_raw[i])/train_num;
@@ -148,4 +132,121 @@ float train::Entropy()//entropy is public for a data set
 	Entropy_S=entropy;
 	return entropy;
 }
-float Information_Gain()//Information gain is private,decide by the CRISPR&attribute
+void train::Test_Run()
+{
+	Monk_Problem_Read();
+	CRISPR_Population_Size=0.05*total_num;
+	this->Count_Class_Num();
+	Generate_CRISPR_Population();
+	Build_CRISPR_Index();
+	Set_Range_Random();
+	Entropy();
+	/*Test information gain*/
+	Information_Gain(CHead);
+	cout<<this->test_num<<endl;
+}
+float  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,decide by the CRISPR&attribute
+{
+	float Inf_Gain;
+	CHP->IG_num=0;
+	int c=0;
+	for(int i=0;i<Train_Data_Head[0]._content.length();i+=CHP->segment_length)
+	{
+		CHP->IG_num++;//Calculate how many IG node is contained
+		CHP->IG[c].IGS[0].content=Train_Data_Head[0]._content.substr(i,CHP->segment_length);//copy the content to the first IGS
+		CHP->IG[c].IGS_num=1;//record how many subnode it contains
+		CHP->IG[c].start=i;//record starting point
+		c++;
+	}
+	for(int i=1;i<train_num;i++)
+		for(int j=0;j<Train_Data_Head[i]._content.length();j+=CHP->segment_length)
+		{
+			for(int n=0;n<CHP->IG_num;n++)
+			{
+				if(CHP->IG[n].start==j)//Address matches then compare the content
+				{
+					int x=0;
+					for(;x<CHP->IG_num;x++)//search the IGS
+					{
+						if(CHP->IG[n].IGS[x].content==Train_Data_Head[i]._content.substr(j,CHP->segment_length))//content don't matches regist new one
+							break;
+					}
+					if(x==CHP->IG_num)
+					{
+						CHP->IG[n].IGS[CHP->IG[n].IGS_num].content=Train_Data_Head[i]._content.substr(j,CHP->segment_length);
+						CHP->IG[n].IGS_num++;
+					}
+					if(Train_Data_Head[i]._class==CHP->class_name)//it is positive example
+						CHP->IG[n].IGS[x].positive++;
+					else                                          //negative example
+						CHP->IG[n].IGS[x].negative++;
+					break;
+				}
+			}
+		}
+	/*string content_register[MAX_SEGMENT_TYPE];//record all the content in a single segment ever appeared.
+	int content_num=0;
+	int portion_register[MAX_SEGMENT_TYPE][3];//how many kind of value do we have in a single segment.the 2nd 3rd layer record the example is positive or negative
+	int portion_num=0;
+	for(int i=0;i<train_num;i++)
+	{
+		for(int j=0;j<Train_Data_Head[i]._content.length();j+=CHP->segment_length)//J is the start point of each segments checked in the sequence
+		{
+			int end=0;
+			if(j+CHP->segment_length>Train_Data_Head[i]._content.length())
+				end=Train_Data_Head[i]._content.length();
+			else
+				end=j+CHP->segment_length-1;
+			/*Segment are decided,build the register
+			if(content_num==0)//Add the fisrt segment
+			{
+				content_num++;
+				portion_num++;
+				content_register[0]=Train_Data_Head[0]._content.substr(j,end);
+				portion_register[0][0]=1;
+				if(Train_Data_Head[0]._class==CHP->class_name)
+				{portion_register[0][1]=1;portion_register[0][2]=0;}
+				else
+				{portion_register[0][1]=0;portion_register[0][2]=1;}
+			}
+			else //check out whether the segment is in the register
+			{
+				for(int n=0;n<content_num;n++)
+				{
+					if(content_register[n]==Train_Data_Head[i]._content.substr(j,end))//find it in register
+						continue;
+					else//register it
+					{
+						content_num++;
+						portion_num++;
+						content_register[content_num]=Train_Data_Head[i]._content.substr(j,end);
+						portion_register[portion_num][0]=1;
+						if(Train_Data_Head[i]._class==CHP->class_name)
+						{portion_register[portion_num][1]++;}
+						else
+						{portion_register[portion_num][2]++;}
+					}
+				}
+			}
+		} 
+	}//end of for with parameter of i*/
+	/*registers are built,start to calculate the information gain
+	int second_item=Second_Item_IG(portion_register,portion_num);*/
+	cout<<"ljk"<<endl;
+	//Inf_Gain=CIndex->entropy-second_item;
+	return Inf_Gain;
+}
+/*float train::Second_Item_IG(int portion_register[][3],int num)//num stand for the No of attribute whose IG wanted
+{
+	float second_item=0;
+	float entropy_second_item=0;
+	for(int i=0;i<num;i++)//each round calculate one attribute's IG
+	{	
+		float p1=portion_register[i][1]/portion_register[i][0];
+		float p2=portion_register[i][2]/portion_register[i][0];
+		//entropy_second_item=p1*log(p1)/log(2)+p2*log(p2)/log(2);
+		float portion=(float)portion_register[i][0]/train_num;
+		second_item+=portion*entropy_second_item;
+	}
+	return -secon_item;
+}*/
