@@ -10,7 +10,7 @@ train::train(int n,BUILDING_METHOD bm):ReadData(n)//N_flod version intialization
 }
 train::~train()
 {}
-bool affinity(CRISPR_Segment CH,Standar_Data_Formate data)//calculate each the affinity with segments in the array
+bool train::affinity(CRISPR_Segment CH,Standar_Data_Formate data)//calculate each the affinity with segments in the array
 {
 	int start=CH.attr._Start;
 	int length=CH.attr._Length;
@@ -146,12 +146,13 @@ float train::Entropy()//entropy is public for a data set
 }
 void train::Test_Run()
 {
+	cout<<"Training....."<<endl;
 	Monk_Problem_Read();
 	CRISPR_Population_Size=0.05*total_num;
-	this->Count_Class_Num();
+	Count_Class_Num();
 	Generate_CRISPR_Population();
 	Build_CRISPR_Index();
-	Set_Range_Random();
+	Set_Range_Random();//each CRISPR have a random range,but within a CRISPR array the range is same.It is different with the random methods.
 	Entropy();
 	for(int i=0;i<CRISPR_Population_Size;i++)
 	{
@@ -159,11 +160,15 @@ void train::Test_Run()
 		Build_CRISPR(&CHead[i]);
 	}
 	for(int i=0;i<train_num;i++)
+	{
 		for(int j=0;j<class_num;j++)
 		{
 			Train_Credit(j,i);//set the j th class's credit with i th data 
+			                  //This part take the most of time of training
 		}
-	cout<<this->test_num<<endl;
+		cout<<"Processing Date No."<<i<<endl;
+	}
+	cout<<"Training finished."<<endl;
 }
 bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,decide by the CRISPR&attribute
 {
@@ -317,7 +322,7 @@ bool train::Sort(Information_Gain_Node &IGN)
 		}
 		return true;
 }
-float Revised_Value(int value ,int length,int digit_posb_num)//scale the value according to the length of the array
+float train::Revised_Value(int value ,int length,int digit_posb_num)//scale the value according to the length of the array
 {
 	float value_cp=value;
 	for(int i=0;i<length;i++)
@@ -378,16 +383,15 @@ bool train::Train_Credit(int i,int j)//set the credit for each CRISPR array
 		CRISPR_Head Array=*CPI.pointer_box[x];
 		CRISPR_Segment *Seg_Pointer=Array.head.next;
 		float match=0;
-		float Credite=Revised_Value(Seg_Pointer->attr._Value,Seg_Pointer->attr._Length,D_num);//scale the value with length to compensate long array
+		
 		for(int y=0;y<Array.length;y++)
 		{
-			if(affinity(*Seg_Pointer,Train_Data))
+			float Credite=Revised_Value(Seg_Pointer->attr._Value,Seg_Pointer->attr._Length,D_num);//scale the value with length to compensate long array,but the effect too small
+			if(affinity(*Seg_Pointer,Train_Data))//If it segment doesn't match means it is not recognized,when it is recognized if the match is positive add match score else decrease it.
 			{
-				if(Seg_Pointer->attr._Value>0)//Nedd more revisement
-					match+=Credite*Seg_Pointer->attr._Length/Train_Data._content.length();
-				else
-					match-=Credite*Seg_Pointer->attr._Length/Train_Data._content.length();
+				match+=Credite*Seg_Pointer->attr._Length/Train_Data._content.length();//value is positive + match else minus
 			}
+			Seg_Pointer=Seg_Pointer->next;
 		}
 		if(match>0)
 			if(Train_Data._class==CPI.class_name)
@@ -395,13 +399,10 @@ bool train::Train_Credit(int i,int j)//set the credit for each CRISPR array
 			else
 				CPI.pointer_box[x]->Credit_in_Population--;
 		else if(match<0)
-		{
 			if(Train_Data._class==CPI.class_name)
 				CPI.pointer_box[x]->Credit_in_Population--;
 			else
 				CPI.pointer_box[x]->Credit_in_Population++;
-		}
 	}
-	
 	return true;
 }

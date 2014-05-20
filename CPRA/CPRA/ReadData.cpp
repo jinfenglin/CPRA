@@ -134,11 +134,11 @@ bool ReadData::N_Fold_Seperate()
 }
 void ReadData::Test_Run()
 {
-	cout<<"Test run!"<<endl;
+	/*cout<<"Test run!"<<endl;
 	//Monk_Problem_Read();
 	DNA_Read();
 	N_Fold_Seperate();
-	Count_Class_Num();
+	Count_Class_Num();*/
 }
 int  ReadData::Count_Class_Num()//by the way calculate the protion of each kind of data
 {
