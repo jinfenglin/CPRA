@@ -80,7 +80,12 @@ struct Information_Gain_Node
 
 	}
 };
-
+struct Vote_Node
+{
+	int agree;
+	int reject;
+	int neutral;
+};
 struct CRISPR_Head
 {
 	CRISPR_Segment head;//pointer to the content of an individual CRISPR
@@ -115,7 +120,7 @@ public:
 	train(int n,BUILDING_METHOD);
 	~train();
 	void Test_Run();
-private:
+protected:
 	bool Generate_CRISPR_Population();//need a method to set the population parameter 
 	bool Hybird_CRISPR_Generator();//If the population of CRIPSR is a mixture of _static&_dynamic individuals, use this to initialize
 	bool Spacer_Adding();
@@ -134,10 +139,15 @@ private:
 	bool Sort(CRISPR_Head *CHP);
 	bool CRISPR_Add(CRISPR_Head &CHP,int i,int j);
 	bool Sort(Information_Gain_Node &IGN);
+	void Class_Match(int i,int j);
+	bool Train_Credit(int i,int j);
+	bool Reset_Board();
 	CRISPR_Segment* Add_To_Tail(CRISPR_Segment &CHH,CRISPR_Segment *temp);
 	int CRISPR_Population_Size;
 	CRISPR_Head CHead[MAX_POPULATION_SIZE]; //pointer to the CRIPSR population,it is the beginning of the set of heads
 	CRISPR_Index CIndex[MAX_CLASS_NUM];
 	float Entropy_S;
+	Vote_Node vote_board[MAX_CLASS_NUM];//record each class's affinity to the new pattern
+	float match_board[MAX_CLASS_NUM];
 	BUILDING_METHOD method;//To define different ways to build up the CRISPR array
 };

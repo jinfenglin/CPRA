@@ -8,6 +8,17 @@ train::train(int n,BUILDING_METHOD bm):ReadData(n)//N_flod version intialization
 {
 	method=bm;
 }
+train::~train()
+{}
+bool affinity(CRISPR_Segment CH,Standar_Data_Formate data)//calculate each the affinity with segments in the array
+{
+	int start=CH.attr._Start;
+	int length=CH.attr._Length;
+	if(CH.attr.content==data._content.substr(start,length))
+		return true;
+	else 
+		return false;
+}
 bool train::Generate_CRISPR_Population()
 {
 	//seperate class first 
@@ -147,6 +158,11 @@ void train::Test_Run()
 		Information_Gain(&CHead[i]);
 		Build_CRISPR(&CHead[i]);
 	}
+	for(int i=0;i<train_num;i++)
+		for(int j=0;j<class_num;j++)
+		{
+			Train_Credit(j,i);//set the j th class's credit with i th data 
+		}
 	cout<<this->test_num<<endl;
 }
 bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,decide by the CRISPR&attribute
@@ -246,14 +262,14 @@ bool train::Build_CRISPR(CRISPR_Head *CHP)//After getting the IG,use IG as guid 
 	}
 	return true;
 }
-bool train::CRISPR_Add(CRISPR_Head &CHP,int i,int j)//i is the NO of attribtue j is the No of avilable options
+bool train::CRISPR_Add(CRISPR_Head &CHP,int i,int j)//i is the NO of attribtue j is the No of avilable option.This function add the jth IGS of i th IG in to the Array
 {                                                  //Transfer this option into the segment and add to the CHP->head part
-	Information_Gain_Subnode IGS=CHP.IG[i].IGS[j];//for short
+	Information_Gain_Subnode IGS=CHP.IG[i].IGS[j];//thsi variable is just for short
 	CRISPR_Segment *temp=new CRISPR_Segment();    //Creat new entity and give value to it,stored in temp
 	temp->attr.content=IGS.content;               
 	temp->attr._Start=CHP.IG[i].start;
 	temp->attr._Length=CHP.segment_length;
-	temp->attr._Value=abs(IGS.positive-IGS.negative);
+	temp->attr._Value=IGS.positive-IGS.negative;
 	temp->next=NULL;
 	Add_To_Tail(CHP.head,temp);//got the pointer at the end of head
 	return true;
@@ -300,4 +316,92 @@ bool train::Sort(Information_Gain_Node &IGN)
 			}
 		}
 		return true;
+}
+float Revised_Value(int value ,int length,int digit_posb_num)//scale the value according to the length of the array
+{
+	float value_cp=value;
+	for(int i=0;i<length;i++)
+	{
+		value_cp/=digit_posb_num;
+	}
+	return value-value_cp;
+}
+void train::Class_Match(int i,int j)
+{
+	CRISPR_Index CPI=CIndex[i];
+    Standar_Data_Formate Test_Data=Test_Data_Head[j];
+	
+	for(int x=0;x<CPI.size;x++)
+	{
+		CRISPR_Head Array=*CPI.pointer_box[x];
+		CRISPR_Segment *Seg_Pointer=Array.head.next;
+		float match=0;
+		float Credite=Revised_Value(Seg_Pointer->attr._Value,Seg_Pointer->attr._Length,D_num);//scale the value with length to compensate long array
+		for(int y=0;y<Array.length;y++)
+		{
+			if(affinity(*Seg_Pointer,Test_Data))
+			{
+				if(Seg_Pointer->attr._Value>0)//Nedd more revisement
+					match+=Credite*Seg_Pointer->attr._Length/Test_Data._content.length();
+				else
+					match-=Credite*Seg_Pointer->attr._Length/Test_Data._content.length();
+			}
+		}
+		if(match>0)
+			vote_board[i].agree++;
+		else if(match<0)
+			vote_board[i].reject++;
+		else 
+			vote_board[i].neutral++;
+		match_board[i]+=match;
+	}
+
+}//test if the i th CIRSPR ARRAY match the j th test data
+bool train::Reset_Board()
+{
+	for(int i=0;i<class_num;i++)
+	{
+		vote_board[i].agree=0;
+		vote_board[i].neutral=0;
+		vote_board[i].reject=0;
+		match_board[i]=0;
+	}
+	return true;
+}
+bool train::Train_Credit(int i,int j)//set the credit for each CRISPR array
+{
+	CRISPR_Index CPI=CIndex[i];
+    Standar_Data_Formate Train_Data=Train_Data_Head[j];
+	
+	for(int x=0;x<CPI.size;x++)
+	{
+		CRISPR_Head Array=*CPI.pointer_box[x];
+		CRISPR_Segment *Seg_Pointer=Array.head.next;
+		float match=0;
+		float Credite=Revised_Value(Seg_Pointer->attr._Value,Seg_Pointer->attr._Length,D_num);//scale the value with length to compensate long array
+		for(int y=0;y<Array.length;y++)
+		{
+			if(affinity(*Seg_Pointer,Train_Data))
+			{
+				if(Seg_Pointer->attr._Value>0)//Nedd more revisement
+					match+=Credite*Seg_Pointer->attr._Length/Train_Data._content.length();
+				else
+					match-=Credite*Seg_Pointer->attr._Length/Train_Data._content.length();
+			}
+		}
+		if(match>0)
+			if(Train_Data._class==CPI.class_name)
+				CPI.pointer_box[x]->Credit_in_Population++;
+			else
+				CPI.pointer_box[x]->Credit_in_Population--;
+		else if(match<0)
+		{
+			if(Train_Data._class==CPI.class_name)
+				CPI.pointer_box[x]->Credit_in_Population--;
+			else
+				CPI.pointer_box[x]->Credit_in_Population++;
+		}
+	}
+	
+	return true;
 }

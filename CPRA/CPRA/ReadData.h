@@ -17,7 +17,7 @@ using namespace std;
 #define DEFAULT_TRAINDATE_PATH "..\\train_date.txt"
 #define DEFAULT_TESTDATE_PATH "..\\test_date.txt "
 #define DEFAULT_MIXEDDATE_PATH "..\\mixed_date.txt"
-struct Standar_Date_Formate
+struct Standar_Data_Formate
 {
 	string _name;  //name of the date
 	string _class; //pattern it blongs to 
@@ -38,9 +38,9 @@ public:
 	~ReadData();
 protected:
 	ifstream ifs_train,ifs_test,ifs_mix;  
-	Standar_Date_Formate Train_Data_Head[MAX_DATE_ITEM];//beginning of training date set
-	Standar_Date_Formate Test_Data_Head[MAX_DATE_ITEM];//beginning of testing date set
-	Standar_Date_Formate Temp_Data_Head[2*MAX_DATE_ITEM];//begining of the date mixed together
+	Standar_Data_Formate Train_Data_Head[MAX_DATE_ITEM];//beginning of training date set
+	Standar_Data_Formate Test_Data_Head[MAX_DATE_ITEM];//beginning of testing date set
+	Standar_Data_Formate Temp_Data_Head[2*MAX_DATE_ITEM];//begining of the date mixed together
 	int train_num,test_num;//record the number of the date items
 	int total_num;
 	int max_length;//record the longest pattern if pattern vary in length
@@ -48,6 +48,7 @@ protected:
 	int class_num;//record the number of class
 	string class_index[MAX_CLASS_NUM];
 	int class_portion_raw[MAX_CLASS_NUM];
+	int D_num;//how many alternatives a single digit may have
 	
 
 };

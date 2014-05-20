@@ -41,6 +41,7 @@ ReadData::~ReadData()
 bool ReadData::Monk_Problem_Read()
 {
 	//Training date reading
+	D_num=4;
 	string str;
 	int i=0;
 	while(!ifs_train.eof())
@@ -75,6 +76,7 @@ bool ReadData::Monk_Problem_Read()
 }
 bool ReadData::DNA_Read()
 {
+	D_num=4;
 	string str_name,str_content;
 	if(N_Fold==0)
 	{

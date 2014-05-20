@@ -5,4 +5,5 @@ void main()
 	Rf->Test_Run();
 	train *TR=new train(_entropy);
 	TR->Test_Run();
+	test *Test=new test(_entropy);
 }
