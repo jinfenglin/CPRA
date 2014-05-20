@@ -18,7 +18,7 @@ enum SEGMENT_KIND {_dynamic,_static};
 		_Start=0;
 		_Length=0;
 		_Value=0;
-		float information_gain;
+		//float information_gain;
 	}
  };
 struct CRISPR_Segment
@@ -32,6 +32,11 @@ struct CRISPR_Segment
 		attr._Value=value.attr._Value;
 		attr.content=value.attr.content;
 		next=value.next;
+		return *this;
+	}
+	CRISPR_Segment():attr()
+	{
+		next=NULL;
 	}
 };
 struct Information_Gain_Subnode
@@ -41,18 +46,44 @@ struct Information_Gain_Subnode
 	int negative;
 	Information_Gain_Subnode():content(""),positive(0),negative(0)
 	{}
+	Information_Gain_Subnode& operator=(Information_Gain_Subnode &value)
+	{
+		content=value.content;
+		negative=value.negative;
+		positive=value.positive;
+		return *this;
+	}
 };
 struct Information_Gain_Node
 {
 	float Information_Gain;
 	int   start;
 	int IGS_num;
+	int Positive_sum;
+	int Negative_sum;
 	Information_Gain_Subnode IGS[MAX_SEGMENT_TYPENUM];
+	Information_Gain_Node():start(0),IGS_num(0)
+	{
+		Positive_sum=0;
+		Negative_sum=0;
+	}
+	Information_Gain_Node& operator=(Information_Gain_Node& IGN)
+	{
+		for(int i=0;i<IGN.IGS_num;i++)
+			IGS[i]=IGN.IGS[i];
+		IGS_num=IGN.IGS_num;
+		Information_Gain=IGN.Information_Gain;
+		Negative_sum=IGN.Negative_sum;
+		Positive_sum=IGN.Positive_sum;
+		start=IGN.start;
+		return *this;
+
+	}
 };
 
 struct CRISPR_Head
 {
-	CRISPR_Segment *head;//pointer to the content of an individual CRISPR
+	CRISPR_Segment head;//pointer to the content of an individual CRISPR
 	int length;          //the length of the CRISPR
 	int Credit_in_Population;//Describe how reliable this CRISPR is
 	string class_name;
@@ -90,7 +121,7 @@ private:
 	bool Spacer_Adding();
 	float Entropy();
 	/*2 ways to add */
-	float Information_Gain(CRISPR_Head *CHP);
+	bool Information_Gain(CRISPR_Head *CHP);
 	bool Random_Grap();
 	float Credit_For_Spacer();
 	bool Build_CRISPR_Index();
@@ -98,7 +129,12 @@ private:
 	bool Add_To_Index(int CHead_i,int CIndex_j);
 	bool Expand_Population(CRISPR_Index *CIP);
 	bool Set_Range_Random();
-	float Second_Item_IG(int portion_register[][3],int num);
+	bool Get_IG(CRISPR_Head *CHP);
+	bool Build_CRISPR(CRISPR_Head *CHP);
+	bool Sort(CRISPR_Head *CHP);
+	bool CRISPR_Add(CRISPR_Head &CHP,int i,int j);
+	bool Sort(Information_Gain_Node &IGN);
+	CRISPR_Segment* Add_To_Tail(CRISPR_Segment &CHH,CRISPR_Segment *temp);
 	int CRISPR_Population_Size;
 	CRISPR_Head CHead[MAX_POPULATION_SIZE]; //pointer to the CRIPSR population,it is the beginning of the set of heads
 	CRISPR_Index CIndex[MAX_CLASS_NUM];

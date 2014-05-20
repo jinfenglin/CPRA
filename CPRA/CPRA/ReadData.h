@@ -9,8 +9,8 @@
 #include "tools.h"
 using namespace std;
 //#define MAX_PATTERN_LENGTH 15000
-#define MAX_DATE_ITEM 1000
-#define MAX_CLASS_NUM 30
+#define MAX_DATE_ITEM 600
+#define MAX_CLASS_NUM 20
 #ifdef _LINUX_
 #deifne \\ /
 #endif

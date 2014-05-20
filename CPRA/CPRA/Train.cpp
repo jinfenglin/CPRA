@@ -36,7 +36,7 @@ bool train::Generate_CRISPR_Population()
 	for(int i=0;i<CRISPR_Population_Size;i++)
 	{
 		temp->Credit_in_Population=0;
-		temp->head=NULL;
+		temp->head.next=NULL;
 		temp->length=0;
 		temp->type=type_flag;
 		temp->class_name=class_index[class_pointer];
@@ -130,6 +130,7 @@ float train::Entropy()//entropy is public for a data set
 		entropy+=-class_portion*log(class_portion)/log(2.0);
 	}
 	Entropy_S=entropy;
+	CIndex->entropy=entropy;
 	return entropy;
 }
 void train::Test_Run()
@@ -141,11 +142,14 @@ void train::Test_Run()
 	Build_CRISPR_Index();
 	Set_Range_Random();
 	Entropy();
-	/*Test information gain*/
-	Information_Gain(CHead);
+	for(int i=0;i<CRISPR_Population_Size;i++)
+	{
+		Information_Gain(&CHead[i]);
+		Build_CRISPR(&CHead[i]);
+	}
 	cout<<this->test_num<<endl;
 }
-float  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,decide by the CRISPR&attribute
+bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,decide by the CRISPR&attribute
 {
 	float Inf_Gain;
 	CHP->IG_num=0;
@@ -166,87 +170,134 @@ float  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,de
 				if(CHP->IG[n].start==j)//Address matches then compare the content
 				{
 					int x=0;
-					for(;x<CHP->IG_num;x++)//search the IGS
+					for(;x<CHP->IG[n].IGS_num;x++)//search the IGS
 					{
 						if(CHP->IG[n].IGS[x].content==Train_Data_Head[i]._content.substr(j,CHP->segment_length))//content don't matches regist new one
 							break;
 					}
-					if(x==CHP->IG_num)
+					if(x==CHP->IG[n].IGS_num)
 					{
 						CHP->IG[n].IGS[CHP->IG[n].IGS_num].content=Train_Data_Head[i]._content.substr(j,CHP->segment_length);
 						CHP->IG[n].IGS_num++;
 					}
 					if(Train_Data_Head[i]._class==CHP->class_name)//it is positive example
+					{
 						CHP->IG[n].IGS[x].positive++;
+						CHP->IG[n].Positive_sum++;
+					}
 					else                                          //negative example
+					{
 						CHP->IG[n].IGS[x].negative++;
+						CHP->IG[n].Negative_sum++;
+					}
 					break;
 				}
 			}
 		}
-	/*string content_register[MAX_SEGMENT_TYPE];//record all the content in a single segment ever appeared.
-	int content_num=0;
-	int portion_register[MAX_SEGMENT_TYPE][3];//how many kind of value do we have in a single segment.the 2nd 3rd layer record the example is positive or negative
-	int portion_num=0;
-	for(int i=0;i<train_num;i++)
-	{
-		for(int j=0;j<Train_Data_Head[i]._content.length();j+=CHP->segment_length)//J is the start point of each segments checked in the sequence
-		{
-			int end=0;
-			if(j+CHP->segment_length>Train_Data_Head[i]._content.length())
-				end=Train_Data_Head[i]._content.length();
-			else
-				end=j+CHP->segment_length-1;
-			/*Segment are decided,build the register
-			if(content_num==0)//Add the fisrt segment
-			{
-				content_num++;
-				portion_num++;
-				content_register[0]=Train_Data_Head[0]._content.substr(j,end);
-				portion_register[0][0]=1;
-				if(Train_Data_Head[0]._class==CHP->class_name)
-				{portion_register[0][1]=1;portion_register[0][2]=0;}
-				else
-				{portion_register[0][1]=0;portion_register[0][2]=1;}
-			}
-			else //check out whether the segment is in the register
-			{
-				for(int n=0;n<content_num;n++)
-				{
-					if(content_register[n]==Train_Data_Head[i]._content.substr(j,end))//find it in register
-						continue;
-					else//register it
-					{
-						content_num++;
-						portion_num++;
-						content_register[content_num]=Train_Data_Head[i]._content.substr(j,end);
-						portion_register[portion_num][0]=1;
-						if(Train_Data_Head[i]._class==CHP->class_name)
-						{portion_register[portion_num][1]++;}
-						else
-						{portion_register[portion_num][2]++;}
-					}
-				}
-			}
-		} 
-	}//end of for with parameter of i*/
-	/*registers are built,start to calculate the information gain
-	int second_item=Second_Item_IG(portion_register,portion_num);*/
-	cout<<"ljk"<<endl;
-	//Inf_Gain=CIndex->entropy-second_item;
-	return Inf_Gain;
+		Get_IG(CHP);
+	return true;
 }
-/*float train::Second_Item_IG(int portion_register[][3],int num)//num stand for the No of attribute whose IG wanted
+bool train::Get_IG(CRISPR_Head *CHP)//num stand for the No of attribute whose IG wanted
 {
-	float second_item=0;
-	float entropy_second_item=0;
-	for(int i=0;i<num;i++)//each round calculate one attribute's IG
-	{	
-		float p1=portion_register[i][1]/portion_register[i][0];
-		float p2=portion_register[i][2]/portion_register[i][0];
-		//entropy_second_item=p1*log(p1)/log(2)+p2*log(p2)/log(2);
-		float portion=(float)portion_register[i][0]/train_num;
-		second_item+=portion*entropy_second_item;
+	int IG_number=CHP->IG_num;
+	
+	for(int n=0;n<IG_number;n++)
+	{
+		float second_item=0;
+		float entropy_for_subnode=0;
+		for(int i=0;i<CHP->IG[n].IGS_num;i++)
+		{
+			int positive=CHP->IG[n].IGS[i].positive;
+			int negative=CHP->IG[n].IGS[i].negative;
+			int pn_sum=positive+negative;
+			float portion=(float)pn_sum/total_num;
+			double p1=(double)positive/pn_sum;
+			double p2=(double)negative/pn_sum;
+			if(p1==0||p2==0)
+				entropy_for_subnode=0;
+			else
+				entropy_for_subnode=p1*log(p1)/log(2.0)+p2*log(p2)/log(2.0);
+			second_item+=-portion*entropy_for_subnode;
+		}
+		CHP->IG[n].Information_Gain=CIndex->entropy-second_item; //got the final IG of each attribute and store them in the array
 	}
-	return -secon_item;
-}*/
+	return true;
+}
+bool train::Build_CRISPR(CRISPR_Head *CHP)//After getting the IG,use IG as guid to build up the CRISPR array
+{
+	//This is one of the methods to build the array
+	//Idea:static CRISPR length,transcedent aborbing rate
+	//IG decide which attribute picked first
+	Sort(CHP);//Sort according to the IG value
+	float transcedent=1.0; //we don't know how many spacers are enough
+	float drop_step=0.8;
+	for(int i=0;i<CHP->IG_num;i++)//It is sorted thus from 0->IG_num, IG decrease
+	{
+		int absorb=CHP->IG[i].IGS_num*transcedent;
+		if(absorb==0)
+			absorb=1; //at least take 1 attribute from each attribute
+		Sort(CHP->IG[i]);//Sort the options accroding to the difference of positive&negative
+		for(int j=0;j<absorb;j++)//go through the avilable options
+		{
+			CRISPR_Add(*CHP,i,j);
+			CHP->length++;
+		}
+		transcedent*=drop_step;
+	}
+	return true;
+}
+bool train::CRISPR_Add(CRISPR_Head &CHP,int i,int j)//i is the NO of attribtue j is the No of avilable options
+{                                                  //Transfer this option into the segment and add to the CHP->head part
+	Information_Gain_Subnode IGS=CHP.IG[i].IGS[j];//for short
+	CRISPR_Segment *temp=new CRISPR_Segment();    //Creat new entity and give value to it,stored in temp
+	temp->attr.content=IGS.content;               
+	temp->attr._Start=CHP.IG[i].start;
+	temp->attr._Length=CHP.segment_length;
+	temp->attr._Value=abs(IGS.positive-IGS.negative);
+	temp->next=NULL;
+	Add_To_Tail(CHP.head,temp);//got the pointer at the end of head
+	return true;
+}
+CRISPR_Segment* train::Add_To_Tail(CRISPR_Segment &CHH,CRISPR_Segment *temp)
+{
+	CRISPR_Segment *CSP=&CHH;
+	while(CSP->next!=NULL)
+		CSP=CSP->next;
+	CSP->next=temp;
+	return CSP;
+}
+bool train::Sort(CRISPR_Head *CHP)
+{
+	Information_Gain_Node *IGbox=CHP->IG;
+	int size=CHP->IG_num;
+	for(int i=size-1;i>=0;i--)
+		for(int j=0;j<=i-1;j++)
+		{
+			if(IGbox[j].Information_Gain<IGbox[j+1].Information_Gain)
+			{
+				Information_Gain_Node temp;
+				temp=IGbox[j];
+				IGbox[j]=IGbox[j+1];
+				IGbox[j+1]=IGbox[j];
+			}
+		}
+	return true;
+}
+bool train::Sort(Information_Gain_Node &IGN)
+{
+	int size=IGN.IGS_num;
+	for(int i=size-1;i>=0;i--)
+		for(int j=0;j<=i-1;j++)
+		{
+			int dif_j=abs(IGN.IGS[j].positive-IGN.IGS[j].negative);
+			int dif_j1=abs(IGN.IGS[j+1].positive-IGN.IGS[j+1].negative);
+			if(dif_j<dif_j1)
+			{
+				Information_Gain_Subnode temp;
+				temp=IGN.IGS[j];
+				IGN.IGS[j]=IGN.IGS[j+1];
+				IGN.IGS[j+1]=temp;
+			}
+		}
+		return true;
+}
