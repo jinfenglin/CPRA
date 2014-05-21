@@ -46,7 +46,7 @@ void test::Class_Match(int i,int j)
 			}
 			Seg_Pointer=Seg_Pointer->next;
 		}
-		//match=match*Array.Credit_in_Population;//fix the matchness with the credits this array have among the population.
+		match=match*Array.Credit_in_Population;//fix the matchness with the credits this array have among the population.
 		if(match>0)
 			vote_board[i].agree++;
 		else if(match<0)
