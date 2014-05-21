@@ -159,7 +159,7 @@ void train::Test_Run()
 		Information_Gain(&CHead[i]);
 		Build_CRISPR(&CHead[i]);
 	}
-	/*for(int i=0;i<train_num;i++)
+	for(int i=0;i<train_num;i++)
 	{
 		for(int j=0;j<class_num;j++)
 		{
@@ -167,7 +167,7 @@ void train::Test_Run()
 			                  //This part take the most of time of training
 		}
 		cout<<"Processing Date No."<<i<<endl;
-	}*/
+	}
 	cout<<"Training finished."<<endl;
 }
 bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,decide by the CRISPR&attribute
