@@ -1,4 +1,5 @@
 #include "test.h"
+#define LOG_PATH "..\\log.txt"
 test::test(BUILDING_METHOD method):train(method)
 {
 	error=0;
@@ -26,7 +27,7 @@ string test::Chose_Answer()//use matchness and leave the vote aside
 	}
 	return pattern;
 }
-void test::Class_Match(int i,int j)
+void test::Class_Match(int i,int j)//To test claculate the matchness between i th class with j th testing data
 { 
 	//complexity of this fuction is roughly =class_i's population * Array length; 13*50
 	CRISPR_Index CPI=CIndex[i];
@@ -34,8 +35,8 @@ void test::Class_Match(int i,int j)
 	
 	for(int x=0;x<CPI.size;x++)
 	{
-		CRISPR_Head Array=*CPI.pointer_box[x];
-		CRISPR_Segment *Seg_Pointer=Array.head.next;
+		CRISPR_Head Array=*CPI.pointer_box[x];// the x th CRISPR array in the CIndex belong to the i th Class 
+		CRISPR_Segment *Seg_Pointer=Array.head.next;//segment pointers to iterate the items on the array
 		float match=0;
 		for(int y=0;y<Array.length;y++)
 		{
@@ -57,10 +58,11 @@ void test::Class_Match(int i,int j)
 	}
 
 }//test if the i th CIRSPR ARRAY match the j th test data
+
 void test::Run()
 {
 	ofstream ofs;
-	ofs.open("..\\log.txt");
+	ofs.open(LOG_PATH);
 	train::Test_Run();
 	for(int j=0;j<test_num;j++)
 	{
@@ -86,8 +88,6 @@ void test::Run()
 			ofs<<"wrong"<<endl;
 		}
 	}
-	cout<<"Test finished."<<endl;
-	cout<<"Right:"<<correct<<" Wrong:"<<error<<endl;
-	ofs<<"Right:"<<correct<<" Wrong:"<<error<<endl;
+	Output_Result(correct,error,accuracy,ofs);
 	ofs.close();
 }

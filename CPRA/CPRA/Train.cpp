@@ -10,7 +10,7 @@ train::train(int n,BUILDING_METHOD bm):ReadData(n)//N_flod version intialization
 }
 train::~train()
 {}
-bool train::affinity(CRISPR_Segment CH,Standar_Data_Formate data)//calculate each the affinity with segments in the array
+bool train::affinity(CRISPR_Segment CH,Standar_Data_Formate data)//calculate the affinity between data and segments in the array
 {
 	int start=CH.attr._Start;
 	int length=CH.attr._Length;
@@ -40,9 +40,9 @@ bool train::Generate_CRISPR_Population()
 	//what if the population is smaller than the class type
 	if(CRISPR_Population_Size<class_num)
 		cout<<"population is smaller than the class type"<<endl;
-	int each_class_num=CRISPR_Population_Size/class_num;
+	int each_class_num=CRISPR_Population_Size/class_num;//average population size in each class
 	int cp_each=each_class_num;
-	int rest_num=CRISPR_Population_Size%class_num;
+	int rest_num=CRISPR_Population_Size%class_num;//if it could not be divided totally
 	int class_pointer=0;
 	for(int i=0;i<CRISPR_Population_Size;i++)
 	{
@@ -78,7 +78,7 @@ bool train::Initialize_CRISPR_Index()
 	}
 	return true;
 }
-bool train::Add_To_Index(int CHead_i,int CIndex_j)
+bool train::Add_To_Index(int CHead_i,int CIndex_j)// link the i th array in CHead to the CIndex's box
 {
 	int size=CIndex[CIndex_j].size;
 	CIndex[CIndex_j].pointer_box[size]=&CHead[CHead_i];
@@ -124,14 +124,16 @@ bool train::Expand_Population(CRISPR_Index *CIP)
 	CIP->pointer_box[size]=&CHead[new_one_location];
 	return true;
 }//Have not tested yet:Expand should be used only after the initialization of CHead and CIndex.
-bool train::Set_Range_Random()
+bool train::Set_Range_Random()//set the segment_length randomly decide the length
 {
+	 int limited_length=max_length/3*2;// parameter
+	 //int limited_length=max_length; 
 	for(int i=0;i<CRISPR_Population_Size;i++)
 	{
-		CHead[i].segment_length=RandomInt(max_length/3*2)+1;
+		CHead[i].segment_length=RandomInt(limited_length)+1;//the length should not longer than the limited length
 	}
 	return true;
-} //set the segment_length
+} 
 float train::Entropy()//entropy is public for a data set
 {
 	float entropy=0;
@@ -148,8 +150,8 @@ void train::Test_Run()
 {
 	cout<<"Training....."<<endl;
 	Monk_Problem_Read();
-	CRISPR_Population_Size=0.05*total_num;
-	Count_Class_Num();
+	CRISPR_Population_Size=0.05*total_num;//Population size
+	Count_Class_Num();//count how many class type it has
 	Generate_CRISPR_Population();
 	Build_CRISPR_Index();
 	Set_Range_Random();//each CRISPR have a random range,but within a CRISPR array the range is same.It is different with the random methods.
@@ -170,12 +172,13 @@ void train::Test_Run()
 	}
 	cout<<"Training finished."<<endl;
 }
-bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,decide by the CRISPR&attribute
+bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private for CRISPR array&attribute
 {
+	//Here CHP is a pointer refer to a single array
 	float Inf_Gain;
 	CHP->IG_num=0;
 	int c=0;
-	for(int i=0;i<Train_Data_Head[0]._content.length();i+=CHP->segment_length)
+	for(int i=0;i<Train_Data_Head[0]._content.length();i+=CHP->segment_length)// we defaultly consider first segments' starting point is 0
 	{
 		CHP->IG_num++;//Calculate how many IG node is contained
 		CHP->IG[c].IGS[0].content=Train_Data_Head[0]._content.substr(i,CHP->segment_length);//copy the content to the first IGS
@@ -218,7 +221,7 @@ bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private,dec
 		Get_IG(CHP);
 	return true;
 }
-bool train::Get_IG(CRISPR_Head *CHP)//num stand for the No of attribute whose IG wanted
+bool train::Get_IG(CRISPR_Head *CHP)//'num' stands for the No of attribute,whose IG wanted
 {
 	int IG_number=CHP->IG_num;
 	
@@ -287,7 +290,7 @@ CRISPR_Segment* train::Add_To_Tail(CRISPR_Segment &CHH,CRISPR_Segment *temp)
 	CSP->next=temp;
 	return CSP;
 }
-bool train::Sort(CRISPR_Head *CHP)
+bool train::Sort(CRISPR_Head *CHP)//arrange the CRISPR array from high IG to low IG
 {
 	Information_Gain_Node *IGbox=CHP->IG;
 	int size=CHP->IG_num;
@@ -304,15 +307,15 @@ bool train::Sort(CRISPR_Head *CHP)
 		}
 	return true;
 }
-bool train::Sort(Information_Gain_Node &IGN)
+bool train::Sort(Information_Gain_Node &IGN)//arrange the segments in IG array from high abs(Value) to low abs(Value)
 {
 	int size=IGN.IGS_num;
 	for(int i=size-1;i>=0;i--)
 		for(int j=0;j<=i-1;j++)
 		{
-			int dif_j=abs(IGN.IGS[j].positive-IGN.IGS[j].negative);
-			int dif_j1=abs(IGN.IGS[j+1].positive-IGN.IGS[j+1].negative);
-			if(dif_j<dif_j1)
+			int dif_j1=abs(IGN.IGS[j].positive-IGN.IGS[j].negative);
+			int dif_j2=abs(IGN.IGS[j+1].positive-IGN.IGS[j+1].negative);
+			if(dif_j1<dif_j2)
 			{
 				Information_Gain_Subnode temp;
 				temp=IGN.IGS[j];
@@ -325,40 +328,10 @@ bool train::Sort(Information_Gain_Node &IGN)
 float train::Revised_Value(int value ,int length,int digit_posb_num)//scale the value according to the length of the array
 {
 	float value_cp=value;
-	for(int i=0;i<length;i++)
-	{
-		value_cp/=digit_posb_num;
-	}
-	return value-value_cp;
+	value_cp*=1-1/pow((float)digit_posb_num,length);
+	return value_cp;
 }
-void train::Class_Match(int i,int j)
-{
-	CRISPR_Index CPI=CIndex[i];
-    Standar_Data_Formate Test_Data=Test_Data_Head[j];
-	
-	for(int x=0;x<CPI.size;x++)
-	{
-		CRISPR_Head Array=*CPI.pointer_box[x];
-		CRISPR_Segment *Seg_Pointer=Array.head.next;
-		float match=0;
-		for(int y=0;y<Array.length;y++)
-		{
-			if(affinity(*Seg_Pointer,Test_Data))
-			{
-				float Credite=Revised_Value(Seg_Pointer->attr._Value,Seg_Pointer->attr._Length,D_num);//scale the value with length to compensate long array
-				match+=Credite*Seg_Pointer->attr._Length/Test_Data._content.length();
-			}
-		}
-		if(match>0)
-			vote_board[i].agree++;
-		else if(match<0)
-			vote_board[i].reject++;
-		else 
-			vote_board[i].neutral++;
-		match_board[i]+=match;
-	}
 
-}//test if the i th CIRSPR ARRAY match the j th test data
 bool train::Reset_Board()
 {
 	for(int i=0;i<class_num;i++)

@@ -25,3 +25,12 @@ int tools::RandomInt()
 
 	return rand();
 }
+void tools::Output_Result(int correct,int error ,float accuracy,ofstream &ofs)
+{	
+	accuracy=(float)correct/(correct+error);
+	cout<<"Test finished."<<endl;
+	cout<<"Right:"<<correct<<" Wrong:"<<error<<endl;
+	cout<<"Accuracy:"<<accuracy<<endl;
+	ofs<<"Right:"<<correct<<" Wrong:"<<error<<endl;
+	ofs<<"Accuracy:"<<accuracy<<endl;
+}

@@ -6,7 +6,7 @@ enum BUILDING_METHOD{_entropy,_random,_hybird};
 enum SEGMENT_KIND {_dynamic,_static};
 #define MAX_POPULATION_SIZE 50
 #define MAX_POINTER_NUM 20
-#define MAX_SEGMENT_TYPENUM 100
+#define MAX_SEGMENT_TYPENUM 150
  struct Attribute
  {
 	 int _Start;
