@@ -2,6 +2,12 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <cmath>
+//#define _WITHOUT_CREDIT_TRAIN
+#ifdef _WITHOUT_CREDIT_TRAIN
+#define SUPER_FLAG true
+#else
+#define SUPER_FLAG false
+#endif
 enum BUILDING_METHOD{_entropy,_random,_hybird};
 enum SEGMENT_KIND {_dynamic,_static};
 #define MAX_POPULATION_SIZE 50
@@ -154,7 +160,6 @@ protected:
 	bool Prune_CRIPSR_Array();
 	bool affinity(CRISPR_Segment CH,Standar_Data_Formate data);
 	float Revised_Value(int value ,int length,int digit_posb_num);
-	void Class_Match(int i,int j);
 	CRISPR_Segment* Add_To_Tail(CRISPR_Segment &CHH,CRISPR_Segment *temp);
 	int CRISPR_Population_Size;
 	CRISPR_Head CHead[MAX_POPULATION_SIZE]; //pointer to the CRIPSR population,it is the beginning of the set of heads
