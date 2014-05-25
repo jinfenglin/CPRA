@@ -172,6 +172,7 @@ void train::Test_Run()
 			}
 			cout<<"Processing Date No."<<i<<endl;
 		}
+		Prune_CRIPSR_Array();
 		cout<<"Training finished."<<endl;
 }
 bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private for CRISPR array&attribute
@@ -374,6 +375,37 @@ bool train::Train_Credit(int i,int j)//set the credit for each CRISPR array
 				CPI.pointer_box[x]->Credit_in_Population--;
 			else
 				CPI.pointer_box[x]->Credit_in_Population++;
+	}
+	return true;
+}
+int Remove_Segment(CRISPR_Segment **sg,CRISPR_Segment **former_p)
+{
+	int count=1;
+	while((*sg)->next->attr._Value==0)
+	{
+		*sg=(*sg)->next;
+		count++;
+	}
+	(*former_p)->next=(*sg)->next;
+	*sg=(*former_p)->next;
+	return count;
+}
+bool train::Prune_CRIPSR_Array()
+{
+	for(int i=0;i<class_num;i++)
+		{
+			for(int j=0;j<CIndex[i].size;j++)
+			{
+				CRISPR_Segment *sg=CHead[j].head.next;
+				CRISPR_Segment *former_p=&CHead[j].head;
+				for(int x=0;x<CHead[j].length&&sg!=NULL;x++)
+				{
+					if(sg->attr._Value==0)
+						CHead[j].length-=Remove_Segment(&sg,&former_p);
+					sg=sg->next;
+					former_p=former_p->next;
+				}
+			}
 	}
 	return true;
 }

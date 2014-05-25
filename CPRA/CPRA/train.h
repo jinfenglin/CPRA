@@ -151,6 +151,7 @@ protected:
 	bool Sort(Information_Gain_Node &IGN);
 	bool Train_Credit(int i,int j);
 	bool Reset_Board();
+	bool Prune_CRIPSR_Array();
 	bool affinity(CRISPR_Segment CH,Standar_Data_Formate data);
 	float Revised_Value(int value ,int length,int digit_posb_num);
 	void Class_Match(int i,int j);

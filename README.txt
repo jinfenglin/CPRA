@@ -3,5 +3,6 @@
 2.Add the function to show the accuracy when using training data to get the accuacy.
 3.Changed the parameter in Set_Range_Random, from 2/3 length to the full length of array hope to see the difference in accuracy.
 4.Mutil iteration in training part to see the result
-Changes made in this version:
 5.Add the Output of CRISPR arrays.
+Changes made in this version:
+6.Add prune function to clean the 0 items.
