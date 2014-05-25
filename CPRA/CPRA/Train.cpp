@@ -161,10 +161,16 @@ void train::Test_Run()
 		Information_Gain(&CHead[i]);
 		Build_CRISPR(&CHead[i]);
 	}
+<<<<<<< HEAD
 	int iteration=1; //how many times the iteration goes to see if this helps to improve the performance
 	Prune_CRIPSR_Array();
 	for(int x=0;x<iteration;x++)
 		for(int i=0;i<train_num;i++)
+=======
+	for(int i=0;i<train_num;i++)
+	{
+		for(int j=0;j<class_num;j++)
+>>>>>>> issue#indepedent_subclass
 		{
 			for(int j=0;j<class_num;j++)
 			{
@@ -173,8 +179,14 @@ void train::Test_Run()
 			}
 			cout<<"Processing Date No."<<i<<endl;
 		}
+<<<<<<< HEAD
 		
 		cout<<"Training finished."<<endl;
+=======
+		cout<<"Processing Date No."<<i<<endl;
+	}
+	cout<<"Training finished."<<endl;
+>>>>>>> issue#indepedent_subclass
 }
 bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private for CRISPR array&attribute
 {
@@ -335,6 +347,37 @@ float train::Revised_Value(int value ,int length,int digit_posb_num)//scale the 
 	value_cp*=1-1/pow((float)digit_posb_num,length);
 	return value_cp;
 }
+<<<<<<< HEAD
+=======
+/*void train::Class_Match(int i,int j)
+{
+	CRISPR_Index CPI=CIndex[i];
+    Standar_Data_Formate Test_Data=Test_Data_Head[j];
+	
+	for(int x=0;x<CPI.size;x++)
+	{
+		CRISPR_Head Array=*CPI.pointer_box[x];
+		CRISPR_Segment *Seg_Pointer=Array.head.next;
+		float match=0;
+		for(int y=0;y<Array.length;y++)
+		{
+			if(affinity(*Seg_Pointer,Test_Data))
+			{
+				float Credite=Revised_Value(Seg_Pointer->attr._Value,Seg_Pointer->attr._Length,D_num);//scale the value with length to compensate long array
+				match+=Credite*Seg_Pointer->attr._Length/Test_Data._content.length();
+			}
+		}
+		if(match>0)
+			vote_board[i].agree++;
+		else if(match<0)
+			vote_board[i].reject++;
+		else 
+			vote_board[i].neutral++;
+		match_board[i]+=match;
+	}
+
+}//test if the i th CIRSPR ARRAY match the j th test data*/
+>>>>>>> issue#indepedent_subclass
 bool train::Reset_Board()
 {
 	for(int i=0;i<class_num;i++)
