@@ -75,12 +75,51 @@ void test::OutPutCRISPR(ofstream &ofs)
 			}
 	}
 }
-void test::Run()
+bool test::Training_Data_Accuracy(ofstream &ofs)//to reflect how many accuracy it has when tested with training data
 {
+	correct=0;
+	error=0;
+	for(int j=0;j<train_num;j++)
+	{
+		cout<<"Training Data No."<<j;
+		ofs<<"Training Data No."<<j;
+		Reset_Board();
+		for(int i=0;i<class_num;i++)
+		{
+			Class_Match(i,j);
+		}
+		//cout<<"result is:";
+		if(Train_Data_Head[j]._class==Chose_Answer())
+		{
+			correct++;
+			cout<<"correct"<<endl;
+			ofs<<"correct"<<endl;
+			
+		}
+		else
+		{
+			error++;
+			cout<<"wrong"<<endl;
+			ofs<<"wrong"<<endl;
+		}
+	}
+	Output_Result(correct,error,accuracy,ofs);
+	return true;
+}
+void test::Run()
+{	
+	clock_t start_point,end_point;
+	start_point=clock();
 	ofstream ofs;
 	ofs.open(LOG_PATH);
 	train::Test_Run();
+	end_point=clock();
+	ofs<<"Training Time="<<(end_point-start_point)/(double)CLOCKS_PER_SEC<<" S"<<endl;
 	OutPutCRISPR(ofs);
+	Training_Data_Accuracy(ofs);
+	correct=0;
+	error=0;
+	start_point=clock();
 	for(int j=0;j<test_num;j++)
 	{
 		cout<<"Testing Data No."<<j;
@@ -105,6 +144,8 @@ void test::Run()
 			ofs<<"wrong"<<endl;
 		}
 	}
+	end_point=clock();
+	ofs<<"Training Time="<<(end_point-start_point)/(double)CLOCKS_PER_SEC<<" S"<<endl;
 	Output_Result(correct,error,accuracy,ofs);
 	ofs.close();
 }

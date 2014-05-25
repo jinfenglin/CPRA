@@ -147,7 +147,7 @@ float train::Entropy()//entropy is public for a data set
 	return entropy;
 }
 void train::Test_Run()
-{
+{;
 	cout<<"Training....."<<endl;
 	Monk_Problem_Read();
 	CRISPR_Population_Size=0.05*total_num;//Population size
@@ -162,17 +162,18 @@ void train::Test_Run()
 		Build_CRISPR(&CHead[i]);
 	}
 	int iteration=1; //how many times the iteration goes to see if this helps to improve the performance
+	Prune_CRIPSR_Array();
 	for(int x=0;x<iteration;x++)
 		for(int i=0;i<train_num;i++)
 		{
 			for(int j=0;j<class_num;j++)
 			{
-				//Train_Credit(j,i);//set the j th class's credit with i th data 
+				Train_Credit(j,i);//set the j th class's credit with i th data 
 			                  //This part take the most of time of training
 			}
 			cout<<"Processing Date No."<<i<<endl;
 		}
-		Prune_CRIPSR_Array();
+		
 		cout<<"Training finished."<<endl;
 }
 bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private for CRISPR array&attribute

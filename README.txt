@@ -5,4 +5,4 @@
 4.Mutil iteration in training part to see the result
 5.Add the Output of CRISPR arrays.
 Changes made in this version:
-6.Add prune function to clean the 0 items.
+6.Add prune function to clean segments whose value is 0;
