@@ -161,16 +161,18 @@ void train::Test_Run()
 		Information_Gain(&CHead[i]);
 		Build_CRISPR(&CHead[i]);
 	}
-	for(int i=0;i<train_num;i++)
-	{
-		for(int j=0;j<class_num;j++)
+	int iteration=1; //how many times the iteration goes to see if this helps to improve the performance
+	for(int x=0;x<iteration;x++)
+		for(int i=0;i<train_num;i++)
 		{
-			Train_Credit(j,i);//set the j th class's credit with i th data 
+			for(int j=0;j<class_num;j++)
+			{
+				//Train_Credit(j,i);//set the j th class's credit with i th data 
 			                  //This part take the most of time of training
+			}
+			cout<<"Processing Date No."<<i<<endl;
 		}
-		cout<<"Processing Date No."<<i<<endl;
-	}
-	cout<<"Training finished."<<endl;
+		cout<<"Training finished."<<endl;
 }
 bool  train::Information_Gain(CRISPR_Head *CHP)//Information gain is private for CRISPR array&attribute
 {
@@ -331,7 +333,6 @@ float train::Revised_Value(int value ,int length,int digit_posb_num)//scale the 
 	value_cp*=1-1/pow((float)digit_posb_num,length);
 	return value_cp;
 }
-
 bool train::Reset_Board()
 {
 	for(int i=0;i<class_num;i++)

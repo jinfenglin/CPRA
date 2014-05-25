@@ -58,12 +58,29 @@ void test::Class_Match(int i,int j)//To test claculate the matchness between i t
 	}
 
 }//test if the i th CIRSPR ARRAY match the j th test data
-
+void test::OutPutCRISPR(ofstream &ofs)
+{
+	for(int i=0;i<class_num;i++)
+		{
+			for(int j=0;j<CIndex[i].size;j++)
+			{
+				//cout<<"CRIPSR array No."<<j<<":"<<"Segment Length="<<CHead[j].segment_length<<" Array_Length="<<CHead[j].length<<" Credit in Population="<<CHead[j].Credit_in_Population<<endl;
+				ofs<<"CRIPSR array No."<<j<<":"<<"Segment Length="<<CHead[j].segment_length<<" Array_Length="<<CHead[j].length<<" Credit in Population="<<CHead[j].Credit_in_Population<<endl;
+				CRISPR_Segment *sg=CHead[j].head.next;
+				for(int x=0;x<CHead[j].length;x++)
+				{
+					ofs<<sg->attr<<endl;
+					sg=sg->next;
+				}
+			}
+	}
+}
 void test::Run()
 {
 	ofstream ofs;
 	ofs.open(LOG_PATH);
 	train::Test_Run();
+	OutPutCRISPR(ofs);
 	for(int j=0;j<test_num;j++)
 	{
 		cout<<"Testing Data No."<<j;

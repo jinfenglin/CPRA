@@ -9,6 +9,7 @@ public:
 	string Chose_Answer();
 	void Class_Match(int i,int j);
 	void Run();
+	void OutPutCRISPR(ofstream &ofs);
 	~test();
 private:
 	int error;

@@ -20,6 +20,16 @@ enum SEGMENT_KIND {_dynamic,_static};
 		_Value=0;
 		//float information_gain;
 	}
+	friend ostream& operator <<(ostream &out,Attribute value)
+	{
+		out<<"Start:"<<value._Start<<" Length:"<<value._Length<<" Value:"<<value._Value<<" Content="<<value.content;
+		return out;
+	}
+	friend ofstream& operator<<(ofstream &out,Attribute value)
+	{
+		out<<"Start:"<<value._Start<<" Length:"<<value._Length<<" Value:"<<value._Value<<" Content="<<value.content;
+		return out;
+	}
  };
 struct CRISPR_Segment
 {
