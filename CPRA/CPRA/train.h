@@ -2,7 +2,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <cmath>
-//#define _WITHOUT_CREDIT_TRAIN
+#define _WITHOUT_CREDIT_TRAIN
 #ifdef _WITHOUT_CREDIT_TRAIN
 #define SUPER_FLAG true
 #else

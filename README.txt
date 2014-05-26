@@ -4,5 +4,7 @@
 3.Changed the parameter in Set_Range_Random, from 2/3 length to the full length of array hope to see the difference in accuracy.
 4.Mutil iteration in training part to see the result
 5.Add the Output of CRISPR arrays.
-Changes made in this version:
 6.Add prune function to clean segments whose value is 0;
+Changes made in this version:
+7.Using SUPER_FLAG to sign the whether training is involved.
+8.Fixed the error in the training dataset accuracy.

@@ -27,11 +27,15 @@ string test::Chose_Answer()//use matchness and leave the vote aside
 	}
 	return pattern;
 }
-void test::Class_Match(int i,int j)//To test claculate the matchness between i th class with j th testing data
+void test::Class_Match(int i,int j,string dataset)//To test claculate the matchness between i th class with j th testing data
 { 
 	//complexity of this fuction is roughly =class_i's population * Array length; 13*50
 	CRISPR_Index CPI=CIndex[i];
-    Standar_Data_Formate Test_Data=Test_Data_Head[j];
+	Standar_Data_Formate Test_Data;
+	if(dataset=="test")
+		 Test_Data=Test_Data_Head[j];
+	else if(dataset=="train")
+		 Test_Data=Train_Data_Head[j];
 	
 	for(int x=0;x<CPI.size;x++)
 	{
@@ -47,6 +51,7 @@ void test::Class_Match(int i,int j)//To test claculate the matchness between i t
 			}
 			Seg_Pointer=Seg_Pointer->next;
 		}
+		if(!SUPER_FLAG)
 		match=match*Array.Credit_in_Population;//fix the matchness with the credits this array have among the population.
 		if(match>0)
 			vote_board[i].agree++;
@@ -86,7 +91,7 @@ bool test::Training_Data_Accuracy(ofstream &ofs)//to reflect how many accuracy i
 		Reset_Board();
 		for(int i=0;i<class_num;i++)
 		{
-			Class_Match(i,j);
+			Class_Match(i,j,"train");
 		}
 		//cout<<"result is:";
 		if(Train_Data_Head[j]._class==Chose_Answer())
@@ -127,7 +132,7 @@ void test::Run()
 		Reset_Board();
 		for(int i=0;i<class_num;i++)
 		{
-			Class_Match(i,j);
+			Class_Match(i,j,"test");
 		}
 		//cout<<"result is:";
 		if(Test_Data_Head[j]._class==Chose_Answer())
